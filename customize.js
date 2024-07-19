@@ -85,7 +85,7 @@ function init() {
 
   scene = new THREE.Scene();
   const axesHelper = new THREE.AxesHelper( AXIS_HEIGHT );
-  axesHelper.setColors( 0x0000ff, 0x00ff00, 0xff0000 );
+  axesHelper.setColors( 0xff0000, 0x00ff00, 0x0000ff );
   scene.add( axesHelper );
   camera = new THREE.PerspectiveCamera(
     45,
@@ -208,11 +208,28 @@ function loadLeePerrySmith() {
   mesh.position.y = -HEIGHT / 2;
   scene.add( mesh );
 }
-
+function square_distance3d(x1, y1, z1, x2, y2, z2) {
+  return (x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2;
+}
 function shoot() {
   position.copy(intersection.point);
   console.log(position);
-  
+  let A = new THREE.Vector3(position.x, position.y, position.z);
+  let Ax_xy = Math.abs((position.y*RADIUS)/HEIGHT);
+  let Ay_xy = position.y;
+  let Az_xy = 0;
+  let A_xy = new THREE.Vector3(Ax_xy, Ay_xy, Az_xy);
+  let square_distance_A_Axy = square_distance3d(A_xy.x, A_xy.y, A_xy.z, A.x, A.y, A.z);
+  let cos_theta = 1-square_distance_A_Axy/(2*(A_xy.x**2));
+  console.log("cos_theta");
+  console.log(cos_theta);
+  //caculate theta
+  let theta = A.z>0?Math.acos(cos_theta):2*Math.PI-Math.acos(cos_theta);
+  console.log("theta");
+  console.log(theta*180/Math.PI);
+  let theta_unwrap = (theta*2*Math.PI)/Math.sqrt(HEIGHT**2+RADIUS**2);
+  console.log("theta_unwrap");
+  console.log(theta_unwrap*180/Math.PI);
   orientation.copy(mouseHelper.rotation);
 
   if (params.rotate) orientation.z = Math.random() * 2 * Math.PI;

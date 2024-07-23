@@ -9,8 +9,8 @@ import { DecalGeometry } from "three/addons/geometries/DecalGeometry.js";
 
 // Properties
 // - cone
-const RADIUS = 10;
-const HEIGHT = 10;
+const RADIUS = 13.5;
+const HEIGHT = 12.6;
 const RADIUS_SEGMENTS = 32;
 const OPEN_ENDED = true;
 const HEIGHT_SEGMENTS = 100;
@@ -19,6 +19,13 @@ const THETA_LENGTH = Math.PI * 2;
 // - axis
 const AXIS_HEIGHT = 100;
 
+// generated circly
+const THETA_2D = (2*Math.PI*RADIUS)/Math.sqrt(HEIGHT**2+RADIUS**2);
+const RADIUS_2D = Math.sqrt(HEIGHT**2+RADIUS**2);
+console.log({
+  THETA_2D: THETA_2D/Math.PI*180,
+  RADIUS_2D
+});
 //End of Properties
 
 
@@ -63,9 +70,9 @@ const orientation = new THREE.Euler();
 const size = new THREE.Vector3(10, 10, 10);
 
 const params = {
-  minScale: 10,
-  maxScale: 20,
-  rotate: true,
+  minScale: 1,
+  maxScale: 2,
+  rotate: false,
   clear: function () {
     removeDecals();
   },
@@ -116,6 +123,7 @@ function init() {
   scene.add(line);
 
   loadLeePerrySmith();
+  loadElipse();
 
   raycaster = new THREE.Raycaster();
 
@@ -208,6 +216,15 @@ function loadLeePerrySmith() {
   mesh.position.y = -HEIGHT / 2;
   scene.add( mesh );
 }
+
+function loadElipse() {
+  const geometry = new THREE.CircleGeometry( RADIUS_2D, RADIUS_SEGMENTS, THETA_START, THETA_2D ); 
+  const material = new THREE.MeshBasicMaterial( { wireframe: true, color: 0xff0000 } ); 
+  const circle = new THREE.Mesh( geometry, material ); scene.add( circle );
+  
+  scene.add( circle );
+}
+
 function square_distance3d(x1, y1, z1, x2, y2, z2) {
   return (x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2;
 }
@@ -227,9 +244,12 @@ function shoot() {
   let theta = A.z>0?Math.acos(cos_theta):2*Math.PI-Math.acos(cos_theta);
   console.log("theta");
   console.log(theta*180/Math.PI);
-  let theta_unwrap = (theta*2*Math.PI)/Math.sqrt(HEIGHT**2+RADIUS**2);
+  let theta_unwrap = (theta*RADIUS)/Math.sqrt(HEIGHT**2+RADIUS**2);
   console.log("theta_unwrap");
   console.log(theta_unwrap*180/Math.PI);
+  let distance_OA = Math.abs(Math.sqrt(position.x**2+position.y**2+position.z**2));
+  console.log("distance_OA");
+  console.log(distance_OA);
   orientation.copy(mouseHelper.rotation);
 
   if (params.rotate) orientation.z = Math.random() * 2 * Math.PI;

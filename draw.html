@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jsPDF Example</title>
+</head>
+<body>
+    <button id="generatePDF">Generate PDF</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        document.getElementById('generatePDF').addEventListener('click', function() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                unit: 'cm',
+                format: 'a0'
+            });
+
+            // Drawing a circle
+            let start_x = 30;
+            let start_y = 50;
+            let radius = 18.47;
+            let theta = 263.18;
+            let new_x = start_x + radius * Math.cos(theta*Math.PI/180);
+            let new_y = start_y + radius * Math.sin(theta*Math.PI/180);
+            let position = {
+                length: 10,
+                theta: 230*Math.PI/180,
+            };
+            let size = {
+                height: 2,
+                width: 2,
+            }
+            pdf.circle(start_x, start_y, radius);
+            pdf.line(start_x, start_y, start_x+radius, start_y);
+            pdf.line(start_x, start_y, new_x, new_y);
+
+            // Adding an image (base64 encoded)
+            //open image and convert to base64 use FileReader
+
+            // const rotation = 90-position.theta*180/Math.PI;
+            const imgData = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC"; // Base64 encoded image data
+            
+            addImageWithRotationAtCenterAndUseCenterPosition({
+                pdf,
+                imgData,
+                format: 'PNG',
+                x: start_x + position.length*Math.cos(position.theta),
+                y: start_y + position.length*Math.sin(position.theta),
+                width: size.width,
+                height: size.height,
+                alias: 'sample',
+                compression: 'MEDIUM',
+                rotation: 90-position.theta*180/Math.PI,
+            });
+            
+            
+            pdf.circle(start_x, start_y, 0.5);
+            pdf.circle(start_x + position.length*Math.cos(position.theta), start_y + position.length*Math.sin(position.theta), 0.1);
+            
+            // Save the PDF
+            pdf.save('sample.pdf');
+        });
+        function addImageWithRotationAtCenterAndUseCenterPosition({
+            pdf,
+            imgData,
+            format,
+            x,
+            y,
+            width,
+            height,
+            alias,
+            compression,
+            rotation,
+        }){
+            const offset_x = width/2;
+            const offset_y = height/2;
+            const start_image_x = x - offset_x;
+            const start_image_y = y - offset_y;
+            const center_of_rotation_position = {
+                x: start_image_x,
+                y: start_image_y + height,
+            }
+            const center_of_image_position = {
+                x: start_image_x + offset_x,
+                y: start_image_y + offset_y,
+            }
+            const new_center_of_image_position = {
+                x: center_of_rotation_position.x + (center_of_image_position.x-center_of_rotation_position.x)*Math.cos(rotation*Math.PI/180) + (center_of_image_position.y-center_of_rotation_position.y)*Math.sin(rotation*Math.PI/180),
+                y: center_of_rotation_position.y - (center_of_image_position.x-center_of_rotation_position.x)*Math.sin(rotation*Math.PI/180) + (center_of_image_position.y-center_of_rotation_position.y)*Math.cos(rotation*Math.PI/180),
+            }
+            const delta = {
+                x: new_center_of_image_position.x - center_of_image_position.x,
+                y: new_center_of_image_position.y - center_of_image_position.y,
+            };
+            pdf.addImage(
+                imgData,
+                format, 
+                x-width/2-delta.x, 
+                y-height/2-delta.y, 
+                width, 
+                height,
+                alias,
+                compression,
+                rotation,
+            );
+
+        }
+    </script>
+</body>
+</html>

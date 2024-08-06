@@ -25,13 +25,16 @@
             let theta = 263.18;
             let new_x = start_x + radius * Math.cos(theta*Math.PI/180);
             let new_y = start_y + radius * Math.sin(theta*Math.PI/180);
+
             let position = {
                 length: 10,
                 theta: 230*Math.PI/180,
             };
+            let scale = 5;
+            let rotation = 90;
             let size = {
-                height: 2,
-                width: 2,
+                height: scale,
+                width: scale,
             }
             pdf.circle(start_x, start_y, radius);
             pdf.line(start_x, start_y, start_x+radius, start_y);
@@ -41,27 +44,56 @@
             //open image and convert to base64 use FileReader
 
             // const rotation = 90-position.theta*180/Math.PI;
-            const imgData = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC"; // Base64 encoded image data
+            //convert image file to base64 string
+            let filePath = "./textures/decal/logo_circle.png";
+            // let filePath = "https://ipfs.filebase.io/ipfs/QmVgFJ4jseUygMLdFKyT9RqMgrw9diQPP5LLiefgcoGsJY?filename=No%25CC%2581n%2520Khue%25CC%2582%2520Va%25CC%2586n%2520Ca%25CC%2581c.png";
+            let imgData = "";
+            let reader = new FileReader();
+            reader.onload = function(){
+                imgData = reader.result;
+            }
+            fetch(filePath)
+            .then(response => response.blob())
+            .then(blob => reader.readAsDataURL(blob));
+
+            reader.onloadend = function(){
+                console.log(imgData);
+                addImageWithRotationAtCenterAndUseCenterPosition({
+                    pdf,
+                    imgData,
+                    format: 'PNG',
+                    x: start_x + position.length*Math.cos(position.theta),
+                    y: start_y + position.length*Math.sin(position.theta),
+                    width: size.width,
+                    height: size.height,
+                    alias: 'sample',
+                    compression: 'NONE',
+                    rotation: 90-position.theta*180/Math.PI+rotation,
+                });
+
+                pdf.circle(start_x + position.length*Math.cos(position.theta), start_y + position.length*Math.sin(position.theta), 0.1);
+
+                // Save the PDF
+                pdf.save('sample.pdf');
+            }
+            // const imgData = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC"; // Base64 encoded image data
             
-            addImageWithRotationAtCenterAndUseCenterPosition({
-                pdf,
-                imgData,
-                format: 'PNG',
-                x: start_x + position.length*Math.cos(position.theta),
-                y: start_y + position.length*Math.sin(position.theta),
-                width: size.width,
-                height: size.height,
-                alias: 'sample',
-                compression: 'MEDIUM',
-                rotation: 90-position.theta*180/Math.PI,
-            });
+            // addImageWithRotationAtCenterAndUseCenterPosition({
+            //     pdf,
+            //     imgData,
+            //     format: 'PNG',
+            //     x: start_x + position.length*Math.cos(position.theta),
+            //     y: start_y + position.length*Math.sin(position.theta),
+            //     width: size.width,
+            //     height: size.height,
+            //     alias: 'sample',
+            //     compression: 'MEDIUM',
+            //     rotation: 90-position.theta*180/Math.PI+rotation,
+            // });
             
             
             pdf.circle(start_x, start_y, 0.5);
-            pdf.circle(start_x + position.length*Math.cos(position.theta), start_y + position.length*Math.sin(position.theta), 0.1);
             
-            // Save the PDF
-            pdf.save('sample.pdf');
         });
         function addImageWithRotationAtCenterAndUseCenterPosition({
             pdf,

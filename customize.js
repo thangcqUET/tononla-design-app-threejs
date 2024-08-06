@@ -95,7 +95,7 @@ function init() {
   axesHelper.setColors( 0xff0000, 0x00ff00, 0x0000ff );
   scene.add( axesHelper );
   camera = new THREE.PerspectiveCamera(
-    45,
+    30,
     window.innerWidth / window.innerHeight,
     1,
     1000
@@ -122,7 +122,7 @@ function init() {
   line = new THREE.Line(geometry, new THREE.LineBasicMaterial());
   scene.add(line);
 
-  loadLeePerrySmith();
+  loadCone();
   loadElipse();
 
   raycaster = new THREE.Raycaster();
@@ -185,6 +185,8 @@ function init() {
       mouseHelper.lookAt(n);
 
       const positions = line.geometry.attributes.position;
+      console.log("line.geometry");
+      console.log(line.geometry);
       positions.setXYZ(0, p.x, p.y, p.z);
       positions.setXYZ(1, n.x, n.y, n.z);
       positions.needsUpdate = true;
@@ -204,9 +206,10 @@ function init() {
   gui.add(params, "rotate");
   gui.add(params, "clear");
   gui.open();
+  
 }
 
-function loadLeePerrySmith() {
+function loadCone() {
   const geometry = new THREE.ConeGeometry( RADIUS, HEIGHT, RADIUS_SEGMENTS, HEIGHT_SEGMENTS, OPEN_ENDED, THETA_START, THETA_LENGTH ); 
   const material = new THREE.MeshBasicMaterial({
     wireframe: true,
@@ -229,6 +232,8 @@ function square_distance3d(x1, y1, z1, x2, y2, z2) {
   return (x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2;
 }
 function shoot() {
+  console.log('intersection');
+  console.log(intersection);
   position.copy(intersection.point);
   console.log(position);
   let A = new THREE.Vector3(position.x, position.y, position.z);
